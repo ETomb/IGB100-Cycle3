@@ -98,6 +98,7 @@ namespace Characters
 
             q.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
             q.y = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleY);
+            q.z = 0f;
 
             return q;
         }
