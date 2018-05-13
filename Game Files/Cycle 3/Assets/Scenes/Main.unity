@@ -152,6 +152,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114640650364509320, guid: 4bd7766ff597fa84e8698c1900d7ae63,
+        type: 2}
+      propertyPath: mouseLook.clampRotation
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4bd7766ff597fa84e8698c1900d7ae63, type: 2}
   m_IsPrefabParent: 0

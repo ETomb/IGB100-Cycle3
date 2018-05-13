@@ -8,9 +8,13 @@ namespace Characters
     {
         public float XSensitivity = 2f;
         public float YSensitivity = 2f;
-        public bool clampVerticalRotation = true;
+        public bool clampRotation = true;
         public float MinimumX = -90F;
         public float MaximumX = 90F;
+        public float MinimumY = -90F;
+        public float MaximumY = 90F;
+        public float MinimumZ = -90F;
+        public float MaximumZ = 90F;
         public bool lockCursor = true;
 
 
@@ -32,11 +36,10 @@ namespace Characters
 
             m_CharacterTargetRot *= Quaternion.Euler (-xRot, yRot, 0f);
 
-            if(clampVerticalRotation)
-                m_CameraTargetRot = ClampRotationAroundXAxis (m_CameraTargetRot);
+            if(clampRotation)
+                m_CharacterTargetRot = ClampRotationAroundAxis (m_CharacterTargetRot);
 
             character.localRotation = m_CharacterTargetRot;
-            camera.localRotation = m_CameraTargetRot;
 
             UpdateCursorLock();
         }
@@ -81,18 +84,20 @@ namespace Characters
             }
         }
 
-        Quaternion ClampRotationAroundXAxis(Quaternion q)
-        {
+        Quaternion ClampRotationAroundAxis(Quaternion q) {
             q.x /= q.w;
             q.y /= q.w;
             q.z /= q.w;
             q.w = 1.0f;
 
-            float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan (q.x);
+            float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan(q.x);
+            float angleY = 2.0f * Mathf.Rad2Deg * Mathf.Atan(q.y);
 
-            angleX = Mathf.Clamp (angleX, MinimumX, MaximumX);
+            angleX = Mathf.Clamp(angleX, MinimumX, MaximumX);
+            angleY = Mathf.Clamp(angleY, MinimumY, MaximumY);
 
-            q.x = Mathf.Tan (0.5f * Mathf.Deg2Rad * angleX);
+            q.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
+            q.y = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleY);
 
             return q;
         }
