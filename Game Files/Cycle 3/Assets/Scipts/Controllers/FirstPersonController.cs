@@ -8,20 +8,23 @@ namespace Characters
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
-        public bool notEncum = true;
-        [SerializeField] private float flightSpeed;
-        [SerializeField] private float encumSpeed;
+        public bool isSwooping = true;
+        [SerializeField] private float ambientSpeed = 4f;
+        [SerializeField] private float pitchSpeed = 1f;
+        [SerializeField] private float rollSpeed = 1f;
+        [SerializeField] private float yawSpeed = 1f;
+        [SerializeField] private float swoopSpeed = 8f;
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
         [SerializeField] private float groundForce;
         [SerializeField] private float gravityMultiplier;
         [SerializeField] private MouseLook mouseLook;
         [SerializeField] private float stepInterval;
-        [SerializeField] private AudioClip[] footstepSounds;    // an array of footstep sounds that will be randomly selected from.
+        [SerializeField] private AudioClip[] flightSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip landSound;           // the sound played when character touches back on ground.
 
         private Camera _camera;
         private float yRot;
-        private Vector2 input;
+        private Vector3 input;
         private Vector3 moveDir = Vector3.zero;
         private CharacterController controller;
         private CollisionFlags _collisionFlags;
@@ -30,11 +33,13 @@ namespace Characters
         private float stepCycle;
         private float nextStep;
         private AudioSource source;
+        private Rigidbody rb;
         GameObject previous;
 
         // Use this for initialization
         private void Start() {
             controller = GetComponent<CharacterController>();
+            rb = GetComponent<Rigidbody>();
             _camera = Camera.main;
             originalCameraPosition = _camera.transform.localPosition;
             stepCycle = 0f;
@@ -43,6 +48,7 @@ namespace Characters
 			mouseLook.Init(transform , _camera.transform);
         }
 
+ 
 
         // Update is called once per frame
         private void Update() {
@@ -67,34 +73,41 @@ namespace Characters
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 desiredMove = transform.forward*input.y + transform.right*input.x;
+            Quaternion addRot = Quaternion.identity;
+            addRot.eulerAngles = input;
 
-            // get a normal for the surface that is being touched to move along it
-            RaycastHit hitInfo;
-            Physics.SphereCast(transform.position, controller.radius, Vector3.down, out hitInfo,
-                               controller.height/2f, Physics.AllLayers, QueryTriggerInteraction.Ignore);
-            desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
-
-            moveDir.x = desiredMove.x*speed;
-            moveDir.z = desiredMove.z*speed;
+            transform.localRotation *= addRot;
+            _camera.transform.localRotation *= addRot;
 
 
-            if (controller.isGrounded) {
-                moveDir.y = -groundForce;
-            } else {
-                moveDir += Physics.gravity*gravityMultiplier*Time.fixedDeltaTime;
-            }
+            //Vector3 desiredMove = transform.forward*input.y + transform.right*input.x;
 
-            _collisionFlags = controller.Move(moveDir*Time.fixedDeltaTime);
+            //// get a normal for the surface that is being touched to move along it
+            //RaycastHit hitInfo;
+            //Physics.SphereCast(transform.position, controller.radius, Vector3.down, out hitInfo,
+            //                   controller.height/2f, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+            //desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
 
-            ProgressStepCycle(speed);
+            //moveDir.x = desiredMove.x*speed;
+            //moveDir.z = desiredMove.z*speed;
+
+
+            //if (controller.isGrounded) {
+            //    moveDir.y = -groundForce;
+            //} else {
+            //    moveDir += Physics.gravity*gravityMultiplier*Time.fixedDeltaTime;
+            //}
+
+            _collisionFlags = controller.Move(transform.forward * speed * Time.fixedDeltaTime);
+
+            ProgressFlightCycle(speed);
 
             mouseLook.UpdateCursorLock();
         }
 
-        private void ProgressStepCycle(float speed) {
+        private void ProgressFlightCycle(float speed) {
             if (controller.velocity.sqrMagnitude > 0 && (input.x != 0 || input.y != 0)) {
-                stepCycle += (controller.velocity.magnitude + (speed*(notEncum ? 1f : m_RunstepLenghten)))*
+                stepCycle += (controller.velocity.magnitude + (speed*(isSwooping ? m_RunstepLenghten : 1f)))*
                              Time.fixedDeltaTime;
             }
 
@@ -104,31 +117,37 @@ namespace Characters
 
             nextStep = stepCycle + stepInterval;
 
-            PlayFootStepAudio();
+            //PlayFootStepAudio();
         }
 
 
         private void PlayFootStepAudio() {
             // pick & play a random footstep sound from the array,
             // excluding sound at index 0
-            int n = Random.Range(1, footstepSounds.Length);
-            source.clip = footstepSounds[n];
-            source.PlayOneShot(source.clip);
+            //int n = Random.Range(1, flightSounds.Length);
+           // source.clip = flightSounds[n];
+            //source.PlayOneShot(source.clip);
             // move picked sound to index 0 so it's not picked next time
-            footstepSounds[n] = footstepSounds[0];
-            footstepSounds[0] = source.clip;
+            //flightSounds[n] = flightSounds[0];
+            //flightSounds[0] = source.clip;
         }
 
         private void GetInput(out float speed) {
             // Read input
-            float horizontal = Input.GetAxisRaw("Horizontal");
-            float vertical = Input.GetAxisRaw("Vertical");
+            float roll = Input.GetAxisRaw("Roll") * Time.deltaTime * rollSpeed;
+            float pitch = Input.GetAxisRaw("Pitch") * Time.deltaTime * pitchSpeed;
+            float yaw = Input.GetAxisRaw("Yaw") * Time.deltaTime * yawSpeed;
 
-            bool waswalking = notEncum;
+            // Set if the player is swooping or not
+            if (Input.GetKey(KeyCode.Space)) {
+                isSwooping = true;
+            } else {
+                isSwooping = false;
+            }
 
             // set the desired speed to be walking or running
-            speed = notEncum ? flightSpeed : encumSpeed;
-            input = new Vector2(horizontal, vertical);
+            speed = isSwooping ? swoopSpeed : ambientSpeed;
+            input = new Vector3(-pitch, yaw, -roll);
 
             // normalize input if it exceeds 1 in combined length:
             if (input.sqrMagnitude > 1) {
