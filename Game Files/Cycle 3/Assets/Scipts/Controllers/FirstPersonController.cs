@@ -8,12 +8,11 @@ namespace Characters
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
-        public bool isSwooping = true;
-        [SerializeField] private float ambientSpeed = 4f;
-        [SerializeField] private float pitchSpeed = 1f;
-        [SerializeField] private float rollSpeed = 1f;
-        [SerializeField] private float yawSpeed = 1f;
-        [SerializeField] private float swoopSpeed = 8f;
+        public bool isSwooping = false;
+        public bool isStalling = false;
+        [SerializeField] private float ambientSpeed = 10f;
+        [SerializeField] private float swoopSpeed = 15f;
+        [SerializeField] private float stallSpeed = 5f;
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
         [SerializeField] private float groundForce;
         [SerializeField] private float gravityMultiplier;
@@ -133,25 +132,19 @@ namespace Characters
         }
 
         private void GetInput(out float speed) {
-            // Read input
-            float roll = Input.GetAxisRaw("Roll") * Time.deltaTime * rollSpeed;
-            float pitch = Input.GetAxisRaw("Pitch") * Time.deltaTime * pitchSpeed;
-            float yaw = Input.GetAxisRaw("Yaw") * Time.deltaTime * yawSpeed;
-
-            // Set if the player is swooping or not
-            if (Input.GetKey(KeyCode.Space)) {
+            // Set swoop/stall state and speed
+            if (Input.GetButton("Fire1")) {
                 isSwooping = true;
-            } else {
+                isStalling = false;
+                speed = swoopSpeed;
+            } else if (Input.GetButton("Fire2")) {
+                isStalling = true;
                 isSwooping = false;
-            }
-
-            // set the desired speed to be walking or running
-            speed = isSwooping ? swoopSpeed : ambientSpeed;
-            input = new Vector3(-pitch, yaw, -roll);
-
-            // normalize input if it exceeds 1 in combined length:
-            if (input.sqrMagnitude > 1) {
-                input.Normalize();
+                speed = stallSpeed;
+            } else {
+                isStalling = false;
+                isSwooping = false;
+                speed = ambientSpeed;
             }
         }
 
