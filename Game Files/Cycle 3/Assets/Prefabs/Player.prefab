@@ -60,6 +60,7 @@ GameObject:
   - component: {fileID: 114640650364509320}
   - component: {fileID: 54503868897604662}
   - component: {fileID: 82916142588897030}
+  - component: {fileID: 114894436495069038}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -310,12 +311,10 @@ MonoBehaviour:
     XSensitivity: 2
     YSensitivity: 2
     clampRotation: 1
-    MinimumX: -90
-    MaximumX: 90
-    MinimumY: -90
-    MaximumY: 90
-    MinimumZ: -90
-    MaximumZ: 90
+    MinimumX: -70
+    MaximumX: 70
+    MinimumY: -85
+    MaximumY: 85
     lockCursor: 1
   stepInterval: 3
   flightSounds: []
@@ -335,6 +334,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!114 &114894436495069038
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1308937242400988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb6c78c1fa01e3946b17eccf87316696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingHealth: 100
+  damageThreshold: 1
+  invulnerabilityTime: 0.5
 --- !u!124 &124281432485051260
 Behaviour:
   m_ObjectHideFlags: 1

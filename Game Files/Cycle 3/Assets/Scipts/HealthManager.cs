@@ -8,6 +8,9 @@ public class HealthManager : MonoBehaviour {
     [SerializeField] int startingHealth = 100;                  // Amount of health the player starts with
     int currentHealth;                                          // Amount of health the player currently has
     bool damaged;                                               // True when the player gets damaged
+    [SerializeField] int damageThreshold = 1;                   // Maximum damage the player can take in a single instance without triggering invulnerability or drastic screen effects
+    [SerializeField] float invulnerabilityTime = 0.5f;         // Amount of time the player will be invulnerable for after taking significant damage
+    bool invulnerable = false;                                  // Returns true if the player is invulnerable
 
     #endregion
 
@@ -51,11 +54,26 @@ public class HealthManager : MonoBehaviour {
     #region Other Public Methods
 
     public void TakeDamage (int amount) {
-        // set the damaged flag
-        damaged = true;
+        if (!invulnerable) {
+            // set the damaged flag
+            damaged = true;
+            // Reduce current health by damage amount
+            currentHealth -= amount;
+            // Make the player invulnerable if the amount is greater than the damage threshold
+            if (amount > damageThreshold) {
+                StartCoroutine(Invulnerability());
+            }
+        }
+    }
 
-        // Reduce current health by damage amount
-        currentHealth -= amount;
+    #endregion
+
+    #region Coroutines
+
+    IEnumerator Invulnerability() {
+        invulnerable = true;
+        yield return new WaitForSeconds(invulnerabilityTime);
+        invulnerable = false;
     }
 
     #endregion

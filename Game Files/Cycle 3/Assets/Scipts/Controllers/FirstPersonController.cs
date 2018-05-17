@@ -6,6 +6,7 @@ namespace Characters
 {
     [RequireComponent(typeof (CharacterController))]
     [RequireComponent(typeof (AudioSource))]
+    [RequireComponent(typeof (HealthManager))]
     public class FirstPersonController : MonoBehaviour
     {
         public bool isSwooping = false;
@@ -33,6 +34,7 @@ namespace Characters
         private float nextStep;
         private AudioSource source;
         private Rigidbody rb;
+        private HealthManager playerHealth;
         GameObject previous;
 
         // Use this for initialization
@@ -45,6 +47,7 @@ namespace Characters
             nextStep = stepCycle/2f;
             source = GetComponent<AudioSource>();
 			mouseLook.Init(transform , _camera.transform);
+            playerHealth = GetComponent<HealthManager>();
         }
 
  
@@ -155,6 +158,10 @@ namespace Characters
 
 
         private void OnControllerColliderHit(ControllerColliderHit hit) {
+            // Take damage
+            playerHealth.TakeDamage(20);
+
+            // Other collision interaction information
             Rigidbody body = hit.collider.attachedRigidbody;
             //dont move the rigidbody if the character is on top of it
             if (_collisionFlags == CollisionFlags.Below) {

@@ -13,8 +13,6 @@ namespace Characters
         public float MaximumX = 90F;
         public float MinimumY = -90F;
         public float MaximumY = 90F;
-        public float MinimumZ = -90F;
-        public float MaximumZ = 90F;
         public bool lockCursor = true;
 
 
