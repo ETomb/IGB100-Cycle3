@@ -11,9 +11,10 @@ namespace Characters
     {
         public bool isSwooping = false;
         public bool isStalling = false;
-        [SerializeField] private float ambientSpeed = 10f;
-        [SerializeField] private float swoopSpeed = 15f;
-        [SerializeField] private float stallSpeed = 5f;
+        public bool freeze = false;                                         // If true, all processes of this script should freeze
+        [SerializeField] private float ambientSpeed = 20f;
+        [SerializeField] private float swoopSpeed = 30f;
+        [SerializeField] private float stallSpeed = 10f;
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
         [SerializeField] private float groundForce;
         [SerializeField] private float gravityMultiplier;
@@ -21,6 +22,7 @@ namespace Characters
         [SerializeField] private float stepInterval;
         [SerializeField] private AudioClip[] flightSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip landSound;           // the sound played when character touches back on ground.
+        [SerializeField] private float lerpSpeed = 0.1f;
 
         private Camera _camera;
         private float yRot;
@@ -35,7 +37,9 @@ namespace Characters
         private AudioSource source;
         private Rigidbody rb;
         private HealthManager playerHealth;
-        GameObject previous;
+        private GameObject previous;
+        private float currentSpeed;
+        private float targetSpeed;
 
         // Use this for initialization
         private void Start() {
@@ -48,12 +52,18 @@ namespace Characters
             source = GetComponent<AudioSource>();
 			mouseLook.Init(transform , _camera.transform);
             playerHealth = GetComponent<HealthManager>();
+            currentSpeed = ambientSpeed;
+            targetSpeed = currentSpeed;
         }
 
  
 
         // Update is called once per frame
         private void Update() {
+            // Freeze processes
+            if (freeze)
+                return;
+    
             RotateView();
             if (!controller.isGrounded && previouslyGrounded)
             {
@@ -72,8 +82,11 @@ namespace Characters
 
 
         private void FixedUpdate() {
-            float speed;
-            GetInput(out speed);
+            // Freeze processes
+            if (freeze)
+                return;
+
+            GetInput();
             // always move along the camera forward as it is the direction that it being aimed at
             Quaternion addRot = Quaternion.identity;
             addRot.eulerAngles = input;
@@ -100,9 +113,13 @@ namespace Characters
             //    moveDir += Physics.gravity*gravityMultiplier*Time.fixedDeltaTime;
             //}
 
-            _collisionFlags = controller.Move(transform.forward * speed * Time.fixedDeltaTime);
+            if (currentSpeed != targetSpeed) {
+                currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, lerpSpeed);
+            }
 
-            ProgressFlightCycle(speed);
+            _collisionFlags = controller.Move(transform.forward * currentSpeed * Time.fixedDeltaTime);
+
+            ProgressFlightCycle(currentSpeed);
 
             mouseLook.UpdateCursorLock();
         }
@@ -134,20 +151,20 @@ namespace Characters
             //flightSounds[0] = source.clip;
         }
 
-        private void GetInput(out float speed) {
+        private void GetInput() {
             // Set swoop/stall state and speed
             if (Input.GetButton("Fire1")) {
                 isSwooping = true;
                 isStalling = false;
-                speed = swoopSpeed;
+                targetSpeed = swoopSpeed;
             } else if (Input.GetButton("Fire2")) {
                 isStalling = true;
                 isSwooping = false;
-                speed = stallSpeed;
+                targetSpeed = stallSpeed;
             } else {
                 isStalling = false;
                 isSwooping = false;
-                speed = ambientSpeed;
+                targetSpeed = ambientSpeed;
             }
         }
 
@@ -159,7 +176,7 @@ namespace Characters
 
         private void OnControllerColliderHit(ControllerColliderHit hit) {
             // Take damage
-            playerHealth.TakeDamage(20);
+            playerHealth.TakeDamage((int)currentSpeed);
 
             // Other collision interaction information
             Rigidbody body = hit.collider.attachedRigidbody;

@@ -301,9 +301,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSwooping: 1
   isStalling: 0
-  ambientSpeed: 10
-  swoopSpeed: 15
-  stallSpeed: 5
+  ambientSpeed: 20
+  swoopSpeed: 35
+  stallSpeed: 10
   m_RunstepLenghten: 0.7
   groundForce: 10
   gravityMultiplier: 2
@@ -319,6 +319,7 @@ MonoBehaviour:
   stepInterval: 3
   flightSounds: []
   landSound: {fileID: 8300000, guid: 3b09d59f4499d45428baa7a21e954296, type: 3}
+  lerpSpeed: 0.5
 --- !u!114 &114738493887638008
 MonoBehaviour:
   m_ObjectHideFlags: 1
