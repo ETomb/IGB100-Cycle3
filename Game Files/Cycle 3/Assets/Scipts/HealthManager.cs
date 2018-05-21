@@ -9,7 +9,6 @@ public class HealthManager : MonoBehaviour {
     [SerializeField] int startingHealth = 100;                              // Amount of health the player starts with
     int currentHealth;                                                      // Amount of health the player currently has
     bool damaged;                                                           // True when the player gets damaged
-    [SerializeField] int damageThreshold = 1;                               // Maximum damage the player can take in a single instance without triggering invulnerability or drastic screen effects
     [SerializeField] float invulnerabilityTime = 0.5f;                      // Amount of time the player will be invulnerable for after taking significant damage
     bool invulnerable = false;                                              // Returns true if the player is invulnerable
     bool isDead = false;                                                    // Returns true if the player is dead 
@@ -83,10 +82,8 @@ public class HealthManager : MonoBehaviour {
             damaged = true;
             // Reduce current health by damage amount
             currentHealth -= amount;
-            // Make the player invulnerable if the amount is greater than the damage threshold
-            if (amount > damageThreshold) {
-                StartCoroutine(Invulnerability());
-            }
+            // Make the player invulnerable
+            StartCoroutine(Invulnerability());
             // If the player has lost all their health and the death flag hasn't been set yet...
             if (currentHealth <= 0 && !isDead) {
                 // ... it should die;

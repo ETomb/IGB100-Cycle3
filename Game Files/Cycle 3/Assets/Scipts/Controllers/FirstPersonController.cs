@@ -177,7 +177,7 @@ namespace Characters
         private void OnControllerColliderHit(ControllerColliderHit hit) {
             // Take damage
             playerHealth.TakeDamage((int)currentSpeed);
-
+          
             // Other collision interaction information
             Rigidbody body = hit.collider.attachedRigidbody;
             //dont move the rigidbody if the character is on top of it
@@ -189,6 +189,14 @@ namespace Characters
                 return;
             }
             body.AddForceAtPosition(controller.velocity*0.1f, hit.point, ForceMode.Impulse);
+        }
+
+        private void OnTriggerStay(Collider other) {
+            // If the collider has the AreaDamage tag...
+            if (other.tag == "AreaDamage") {
+                // ... the player suffers a small amount of damage
+                playerHealth.TakeDamage(5);
+            }
         }
     }
 }
