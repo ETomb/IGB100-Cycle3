@@ -7441,31 +7441,6 @@ Prefab:
       propertyPath: damageImage
       value: 
       objectReference: {fileID: 1748619616}
-    - target: {fileID: 114894436495069038, guid: 4bd7766ff597fa84e8698c1900d7ae63,
-        type: 2}
-      propertyPath: flashColor.a
-      value: 0.8627451
-      objectReference: {fileID: 0}
-    - target: {fileID: 114894436495069038, guid: 4bd7766ff597fa84e8698c1900d7ae63,
-        type: 2}
-      propertyPath: flashSpeed
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 114894436495069038, guid: 4bd7766ff597fa84e8698c1900d7ae63,
-        type: 2}
-      propertyPath: flashDelay
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114894436495069038, guid: 4bd7766ff597fa84e8698c1900d7ae63,
-        type: 2}
-      propertyPath: deathFade
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114894436495069038, guid: 4bd7766ff597fa84e8698c1900d7ae63,
-        type: 2}
-      propertyPath: invulnerabilityTime
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4bd7766ff597fa84e8698c1900d7ae63, type: 2}
   m_IsPrefabParent: 0

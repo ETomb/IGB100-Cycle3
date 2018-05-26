@@ -301,6 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSwooping: 1
   isStalling: 0
+  freeze: 0
   ambientSpeed: 20
   swoopSpeed: 35
   stallSpeed: 10
@@ -347,8 +348,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingHealth: 100
-  damageThreshold: 1
-  invulnerabilityTime: 0.5
+  invulnerabilityTime: 1
+  flashColor: {r: 0, g: 0, b: 0, a: 0.8627451}
+  damageImage: {fileID: 0}
+  flashSpeed: 0.05
+  flashDelay: 0.2
+  deathFade: 0.5
+  gameEndHold: 3
 --- !u!124 &124281432485051260
 Behaviour:
   m_ObjectHideFlags: 1
