@@ -20,6 +20,8 @@ public class HealthManager : MonoBehaviour {
     [SerializeField] float deathFade = 1;                                   // Speed at which the screen fades to black upon player death
     [SerializeField] float gameEndHold = 3;                                 // Number of seconds the player is held for after dying until the game over sequence starts up
     Characters.FirstPersonController player;                                // The controller script of the player
+    [SerializeField] Slider healthSlider;                                   // The player's health bar
+    bool hasHealthBar = false;                                              // Returns true if the player has been assigned a health bar
 
 
     #endregion
@@ -43,6 +45,15 @@ public class HealthManager : MonoBehaviour {
     private void Awake() {
         // Set the initial health of the player
         currentHealth = startingHealth;
+        // Check if the player has a health bar...
+        if (healthSlider != null) {
+            // ... set  the flag accordingly...
+            hasHealthBar = true;
+            // ... and set the maximum value of the slider component...
+            healthSlider.maxValue = startingHealth;
+            // ... then reset the current value
+            healthSlider.value = healthSlider.maxValue;
+        }
     }
 
     private void Start() {
@@ -65,6 +76,10 @@ public class HealthManager : MonoBehaviour {
 
         // Reset damaged flag
         damaged = false;
+
+        // Update the health bar
+        if (hasHealthBar)
+            healthSlider.value = currentHealth;
 
         // If the player is dead...
         if (isDead && damageImage.color != Color.black) {

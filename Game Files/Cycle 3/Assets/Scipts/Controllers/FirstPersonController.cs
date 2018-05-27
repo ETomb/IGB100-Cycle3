@@ -23,6 +23,7 @@ namespace Characters
         [SerializeField] private AudioClip[] flightSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip landSound;           // the sound played when character touches back on ground.
         [SerializeField] private float lerpSpeed = 0.1f;
+        [SerializeField] int damageTick = 5;                // the amount of damage you suffer in an area or by colliding into an invisble wall
 
         private Camera _camera;
         private float yRot;
@@ -175,8 +176,16 @@ namespace Characters
 
 
         private void OnControllerColliderHit(ControllerColliderHit hit) {
-            // Take damage
-            playerHealth.TakeDamage((int)currentSpeed);
+            // If the object isn't an invisible wall...
+            if (hit.gameObject.tag != "InvisibleWall") {
+                // ... take damage equal to your current speed
+                playerHealth.TakeDamage((int)currentSpeed);
+            }
+            // Otherwise ...
+            else {
+                // ... take a small amount of damage
+                playerHealth.TakeDamage(damageTick);
+            }
           
             // Other collision interaction information
             Rigidbody body = hit.collider.attachedRigidbody;
@@ -195,7 +204,7 @@ namespace Characters
             // If the collider has the AreaDamage tag...
             if (other.tag == "AreaDamage") {
                 // ... the player suffers a small amount of damage
-                playerHealth.TakeDamage(5);
+                playerHealth.TakeDamage(damageTick);
             }
         }
     }
