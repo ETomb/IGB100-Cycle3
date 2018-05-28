@@ -47,6 +47,11 @@ public class GoalManager : MonoBehaviour {
 	
 	void Update () {
         UpdateSliders();
+
+        if(playerSlider.value <= fireSlider.value)
+        {
+            player.GetComponent<HealthManager>().FireDamage();
+        }
 	}
 
     #endregion

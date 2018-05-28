@@ -23,6 +23,8 @@ public class HealthManager : MonoBehaviour {
     [SerializeField] Slider healthSlider;                                   // The player's health bar
     bool hasHealthBar = false;                                              // Returns true if the player has been assigned a health bar
 
+    float FireImTime = 0.1f;
+    bool fireImmune = false;
 
     #endregion
 
@@ -106,6 +108,18 @@ public class HealthManager : MonoBehaviour {
             }
         }
     }
+    public void FireDamage()
+    {
+        if (!fireImmune)
+        {
+            currentHealth--;
+            StartCoroutine(FireInvulnerability());
+            if (currentHealth <= 0 && !isDead)
+            {
+                Death();
+            }
+        }
+    }
 
     private void Death() {
         // Set the death flag so this function won't be called again
@@ -138,6 +152,13 @@ public class HealthManager : MonoBehaviour {
         yield return new WaitForSeconds(gameEndHold);
         /// GameOver
         
+    }
+
+    IEnumerator FireInvulnerability()
+    {
+        fireImmune = true;
+        yield return new WaitForSeconds(FireImTime);
+        fireImmune = false;
     }
 
     #endregion
