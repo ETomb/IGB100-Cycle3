@@ -322,7 +322,7 @@ MonoBehaviour:
   groundForce: 10
   gravityMultiplier: 2
   mouseLook:
-    XSensitivity: 0.5
+    XSensitivity: 1.5
     YSensitivity: 1.5
     clampRotation: 1
     MinimumX: -70
