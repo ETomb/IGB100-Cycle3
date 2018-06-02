@@ -10,16 +10,18 @@ public class GameManager : MonoBehaviour {
     [SerializeField] float endZ;                            // ending z-coordinate of the level
     [SerializeField] float startZ;                          // starting z-coordinate of the level
     [SerializeField] float fadeZ;                           // z-coordinate of where to begin fading out the fog effect
-    bool doFadeFog;                                         // returns true if the fog is to be faded out
+    bool doFadeOut;                                         // returns true if the fog & audio is to be faded out
     float playerZ;                                          // z-position of the player
     float fireZ;                                            // z-position of the fire
     [SerializeField] Slider playerSlider;                   // the slider that displays the player's position
     [SerializeField] Slider fireSlider;                     // the slider the displays the fire's position
     bool hasSliders = false;                                // returns true if both slider variables have been assigned  
     float currentDensity;                                   // current density level of the fog
-    [SerializeField] float lerpTime = 1f;                                    // the amount of time the fog density should be lerped by   
+    [SerializeField] float lerpTime = 1f;                   // the amount of time the fog density should be lerped by   
     [SerializeField] GameObject player;                     // the player
     [SerializeField] GameObject fire;                       // the fire they are escaping from
+    AudioSource playerSource;                               // the audio source attached to the player 
+    float sourceVolume;                                     // the volume of the audio source
 
     #endregion
 
@@ -31,6 +33,10 @@ public class GameManager : MonoBehaviour {
             // ... set flag accordingly
             hasSliders = true;
         }
+        // Assign the player source...
+        playerSource = player.GetComponent<AudioSource>();
+        // ... and the volume
+        sourceVolume = playerSource.volume;
     }
 
     void Start () {
@@ -52,8 +58,9 @@ public class GameManager : MonoBehaviour {
 	void Update () {
         CheckPositions();
         DoFadeFog();
-        if (doFadeFog) {
+        if (doFadeOut) {
             FadeFog();
+            FadeAudio();
         }
 	}
 
@@ -94,14 +101,14 @@ public class GameManager : MonoBehaviour {
 
     void DoFadeFog() {
         // If the flag is already true...
-        if (doFadeFog) {
+        if (doFadeOut) {
             // Exit the method
             return;
         }
         // If the player is past the point where fog should start fading...
         if (playerZ >= fadeZ) {
             // ... set the flag to true
-            doFadeFog = true;
+            doFadeOut = true;
         }
         
     }
@@ -124,6 +131,22 @@ public class GameManager : MonoBehaviour {
             // ... disable fog
             RenderSettings.fog = false;
         }
+    }
+
+    void FadeAudio() {
+        // If player source is unassigned...
+        if (playerSource == null) {
+            // ... exit the method
+            return;
+        }
+        // Otherwise,
+        // Store the value f the current volume
+        sourceVolume = playerSource.volume;
+        // Lerp the volume toward 0
+        sourceVolume = Mathf.Lerp(sourceVolume, 0f, lerpTime);
+        // Set the volume to this new value
+        playerSource.volume = sourceVolume;
+        // If the deinsity is 0...
     }
 
     #endregion
