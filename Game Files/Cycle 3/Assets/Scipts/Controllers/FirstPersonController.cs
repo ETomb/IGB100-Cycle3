@@ -204,7 +204,7 @@ namespace Characters
             // If the collider has the Fire tag...
             if (other.tag == "Fire") {
                 // ... the player suffers an amount of damage
-                playerHealth.TakeDamage(damageTick);
+                playerHealth.TakeDamage(damageTick, true);
             } // Otherwise, if the collider has the AreaDamage tag...
             else if (other.tag == "AreaDamage") {
                 // ... the player suffers a small amount of damage

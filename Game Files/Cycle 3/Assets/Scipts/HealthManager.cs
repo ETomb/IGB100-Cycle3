@@ -13,6 +13,7 @@ public class HealthManager : MonoBehaviour {
     bool invulnerable = false;                                              // Returns true if the player is invulnerable
     bool isDead = false;                                                    // Returns true if the player is dead 
     [SerializeField] Color flashColor = new Color(0f, 0f, 0f, 0.1f);        // Colour the colorImage is set to, to flash
+    [SerializeField] Color fireFlashColor = new Color(0f, 0f, 0f, 0.1f);    // Colour the colorImage is set to, to flash, when taking fire damage
     [SerializeField] Image damageImage;                                     // Reference to an image to flash on screen upon being hurt
     [SerializeField] float flashSpeed = 5f;                                 // The speed the damage image will fade at
     [SerializeField] float flashDelay = 1;                                  // Delay before fading out the flashColor of the damageImage
@@ -22,6 +23,7 @@ public class HealthManager : MonoBehaviour {
     Characters.FirstPersonController player;                                // The controller script of the player
     [SerializeField] Slider healthSlider;                                   // The player's health bar
     bool hasHealthBar = false;                                              // Returns true if the player has been assigned a health bar
+    bool tookFireDamage = false;                                            // Returns true if the player took fire damage
 
     float FireImTime = 0.1f;
     bool fireImmune = false;
@@ -65,7 +67,7 @@ public class HealthManager : MonoBehaviour {
 
     private void Update() {
         // If the player has just been damaged...
-        if (damaged) {
+        if (damaged && !isDead) {
             // ... set the colour of damageImage to the flash colour
             StartCoroutine(FlashImage());
         }
@@ -93,10 +95,12 @@ public class HealthManager : MonoBehaviour {
 
     #region Other Public Methods
 
-    public void TakeDamage (int amount) {
+    public void TakeDamage (int amount, bool fireDamage = false) {
         if (!invulnerable) {
             // set the damaged flag
             damaged = true;
+            // set the fir damage tage
+            tookFireDamage = fireDamage;
             // Reduce current health by damage amount
             currentHealth -= amount;
             // Make the player invulnerable
@@ -128,7 +132,11 @@ public class HealthManager : MonoBehaviour {
 
     IEnumerator FlashImage() {
         fadeOut = false;
-        damageImage.color = flashColor;
+        if (tookFireDamage) {
+            damageImage.color = fireFlashColor;
+        } else {
+            damageImage.color = flashColor;
+        }
         yield return new WaitForSeconds(flashDelay);
         fadeOut = true;
     }
