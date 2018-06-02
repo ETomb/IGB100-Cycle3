@@ -201,8 +201,12 @@ namespace Characters
         }
 
         private void OnTriggerStay(Collider other) {
-            // If the collider has the AreaDamage tag...
-            if (other.tag == "AreaDamage") {
+            // If the collider has the Fire tag...
+            if (other.tag == "Fire") {
+                // ... the player suffers an amount of damage
+                playerHealth.TakeDamage(damageTick);
+            } // Otherwise, if the collider has the AreaDamage tag...
+            else if (other.tag == "AreaDamage") {
                 // ... the player suffers a small amount of damage
                 playerHealth.TakeDamage(damageTick);
             }

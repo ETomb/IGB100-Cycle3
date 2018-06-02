@@ -6,6 +6,7 @@ TagManager:
   tags:
   - AreaDamage
   - InvisibleWall
+  - Fire
   layers:
   - Default
   - TransparentFX

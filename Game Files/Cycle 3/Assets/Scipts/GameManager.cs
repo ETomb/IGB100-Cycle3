@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GoalManager : MonoBehaviour {
+public class GameManager : MonoBehaviour {
 
     #region Variables
 
     [SerializeField] float endZ;                            // ending z-coordinate of the level
     [SerializeField] float startZ;                          // starting z-coordinate of the level
+    [SerializeField] float fadeZ;                           // z-coordinate of where to begin fading out the fog effect
+    bool doFadeFog;                                         // returns true if the fog is to be faded out
     float playerZ;                                          // z-position of the player
     float fireZ;                                            // z-position of the fire
     [SerializeField] Slider playerSlider;                   // the slider that displays the player's position
     [SerializeField] Slider fireSlider;                     // the slider the displays the fire's position
-    bool hasSliders = false;                                // returns true if both slider variables have been assigned   
+    bool hasSliders = false;                                // returns true if both slider variables have been assigned  
+    float currentDensity;                                   // current density level of the fog
+    [SerializeField] float lerpTime = 1f;                                    // the amount of time the fog density should be lerped by   
     [SerializeField] GameObject player;                     // the player
     [SerializeField] GameObject fire;                       // the fire they are escaping from
 
@@ -46,11 +50,10 @@ public class GoalManager : MonoBehaviour {
 	}
 	
 	void Update () {
-        UpdateSliders();
-
-        if(playerSlider.value <= fireSlider.value)
-        {
-            player.GetComponent<HealthManager>().FireDamage();
+        CheckPositions();
+        DoFadeFog();
+        if (doFadeFog) {
+            FadeFog();
         }
 	}
 
@@ -58,7 +61,7 @@ public class GoalManager : MonoBehaviour {
 
     #region Helper Methods
 
-    void UpdateSliders() {
+    void CheckPositions() {
         // Get the player's z position and set the corresponding variable
         playerZ = player.transform.position.z;
         // Set the value of the slider to match
@@ -86,6 +89,40 @@ public class GoalManager : MonoBehaviour {
         if (playerZ >= endZ) {
             // ... they win!
             /// Insert win game over
+        }
+    }
+
+    void DoFadeFog() {
+        // If the flag is already true...
+        if (doFadeFog) {
+            // Exit the method
+            return;
+        }
+        // If the player is past the point where fog should start fading...
+        if (playerZ >= fadeZ) {
+            // ... set the flag to true
+            doFadeFog = true;
+        }
+        
+    }
+
+    void FadeFog() {
+        // If fog is disabled...
+        if (RenderSettings.fog == false) {
+            // Exit the method
+            return;
+        }
+        // Otherwise,
+        // Store the value of the current fog density
+        currentDensity = RenderSettings.fogDensity;
+        // Lerp the density toward 0
+        currentDensity = Mathf.Lerp(currentDensity, 0f, lerpTime);
+        // Set the fog density to this new value
+        RenderSettings.fogDensity = currentDensity;
+        // If the deinsity is 0...
+        if (currentDensity == 0f) {
+            // ... disable fog
+            RenderSettings.fog = false;
         }
     }
 
