@@ -116,8 +116,12 @@ public class HealthManager : MonoBehaviour {
     private void Death() {
         // Set the death flag so this function won't be called again
         isDead = true;
-        // Freeze all player processes
-        player.freeze = true;
+        // Lose the game
+        FindObjectOfType<GameManager>().LoseScenario();
+    }
+
+    public void MakeInvulnerable() {
+        invulnerable = true;
     }
 
     #endregion
@@ -128,6 +132,7 @@ public class HealthManager : MonoBehaviour {
         invulnerable = true;
         yield return new WaitForSeconds(invulnerabilityTime);
         invulnerable = false;
+        StopCoroutine("Invulnerability");
     }
 
     IEnumerator FlashImage() {
@@ -139,15 +144,7 @@ public class HealthManager : MonoBehaviour {
         }
         yield return new WaitForSeconds(flashDelay);
         fadeOut = true;
-    }
-
-    IEnumerator DeathSequence() {
-        // Wait until the screen has faded to black
-        yield return new WaitUntil(() => damageImage.color == Color.black);
-        // Then wait a few seconds
-        yield return new WaitForSeconds(gameEndHold);
-        /// GameOver
-        
+        StopCoroutine("FlashImage");
     }
 
     #endregion
